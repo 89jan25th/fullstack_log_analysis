@@ -72,7 +72,7 @@ db.close()
 
 ### Explanation of the code
 1. Question #1: What are the most popular three articles of all time?
-⋅⋅* In order to find articles with the most views, you have to join two tabels(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function.
+* In order to find articles with the most views, you have to join two tabels(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function.
 ```
 c.execute("create view popular as select slug, count(*) as num \
     from articles, log where log.path like '%' || articles.slug || \
@@ -87,7 +87,7 @@ print(df)
 ```
 
 2. Question #2: Who are the most popular article authors of all time?
-⋅⋅* A table from the previous question has articles and their ID and views. Therfore, you can join it to the author table for author's name. Note that bigint type was used for views in case of the number is large.
+* A table from the previous question has articles and their ID and views. Therfore, you can join it to the author table for author's name. Note that bigint type was used for views in case of the number is large.
 ```
 print("\n2. Who are the most popular article authors of all time?")
 df = pd.read_sql_query("select name, sum(num)::bigint as views \
@@ -97,7 +97,7 @@ print(df)
 ```
 
 3. Question #3: On which days did more than 1 percent of requests lead to erroers?
-⋅⋅* OK request has text '200' and bad one has text '404.' So you can make two tables for each OK and bad requests, then find the bad rate of each day's request. Remarkably, you need to put ::decimal&ast100 for a rate value so you get decimal numbers.
+* OK request has text '200' and bad one has text '404.' So you can make two tables for each OK and bad requests, then find the bad rate of each day's request. Remarkably, you need to put ::decimal\*100 for a rate value so you get decimal numbers.
 ```
 c.execute("create view traffic as select id, \
     time::timestamp::date, status from log")
@@ -117,4 +117,4 @@ print(df)
 ```
 
 4. Note
-⋅⋅* Pandas library was used to display the result more clearly.
+* Pandas library was used to display the result more clearly.
