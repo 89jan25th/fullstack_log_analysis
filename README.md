@@ -117,4 +117,5 @@ print(df)
 ```
 
 4. Note
+* This code passed pycodestyle.
 * Pandas library was used to display the result more clearly.
