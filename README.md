@@ -72,7 +72,7 @@ db.close()
 
 ### Explanation of the code
 1. Question #1: What are the most popular three articles of all time?
-* In order to find articles with the most views, you have to join two tabels(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function.
+* In order to find articles with the most views, you have to join two tables(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function.
 ```
 c.execute("create view popular as select slug, count(*) as num \
     from articles, log where log.path like '%' || articles.slug || \
