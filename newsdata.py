@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.7
+
 import psycopg2
 import pandas as pd
 DBNAME = "news"
@@ -6,8 +8,8 @@ db = psycopg2.connect(database=DBNAME)
 c = db.cursor()
 
 c.execute("create view popular as select slug, count(*) as num \
-    from articles, log where log.path like '%' || articles.slug || \
-    '%' group by slug order by num desc")
+    from articles, log where log.path like '%'||articles.slug||'%' \
+    and log.status like '200%' group by slug order by num desc")
 c.execute("create view popular_result as select title, author, \
     num from popular, articles where popular.slug = articles.slug")
 

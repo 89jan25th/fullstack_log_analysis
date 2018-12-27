@@ -1,31 +1,46 @@
-# Udacity Full Stack Web Developer Nanodegree Program
-## Project: Logs Analysis
+# News website log analysis
+## From Udacity Full Stack Web Developer Nanodegree Program Project: Logs Analysis
+### Preface
+This repository has a python code for analyzing fictional newspaper site's database. The database contains newspaper articles, as well as the web server log for the site. The log has a database row for each time a reader loaded a web page. The program is to find which authors and articles are most popular and on which day the 404 error rate was the highest.
+
 ### How to run the program
-With VMbox, vagrant, python, pyscopg2, and pandas, run "python newsdata.py" in terminal.
+With VMbox, vagrant, python, pyscopg2, pandas, and database(newsdata.sql), run "python newsdata.py" in terminal.
+* VMbox: https://www.virtualbox.org/wiki/Download_Old_Builds_5_1
+* Vagrant: https://www.vagrantup.com/downloads.html
+* Python: https://www.python.org/downloads/
+* Pyscopg2: 
+```
+pip install -U pip # make sure to have an up-to-date pip
+pip install psycopg2
+```
+* Pandas: http://pandas.pydata.org
+* newsdata.sql: https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip
 
 ### What the program shows
 ```
-vagrant@vagrant:/vagrant$ python newsdata.py
+vagrant@vagrant:/vagrant/fullstack_log_analysis$ python newsdata.py
 1. What are the most popular three articles of all time?
                             article   views
-0  Candidate is jerk, alleges rival  342102
-1  Bears love berries, alleges bear  256365
-2  Bad things gone, say good people  171762
+0  Candidate is jerk, alleges rival  338647
+1  Bears love berries, alleges bear  253801
+2  Bad things gone, say good people  170098
 
 2. Who are the most popular article authors of all time?
                      name   views
-0         Ursula La Multa  512805
-1  Rudolf von Treppenwitz  427781
-2   Anonymous Contributor  171762
-3          Markoff Chaney   85387
+0         Ursula La Multa  507594
+1  Rudolf von Treppenwitz  423457
+2   Anonymous Contributor  170098
+3          Markoff Chaney   84557
 
-3. On which days did more than 1 percent of requests lead to erroers?
+3. On which days did more than 1 percent     of requests lead to erroers?
          time     ok   bad     ratio
 0  2016-07-17  54642  1265  2.262686
 ```
 
 ### Source code
 ```
+#!/usr/bin/env python2.7
+
 import psycopg2
 import pandas as pd
 DBNAME = "news"
@@ -34,8 +49,8 @@ db = psycopg2.connect(database=DBNAME)
 c = db.cursor()
 
 c.execute("create view popular as select slug, count(*) as num \
-    from articles, log where log.path like '%' || articles.slug || \
-    '%' group by slug order by num desc")
+    from articles, log where log.path like '%'||articles.slug||'%' \
+    and log.status like '200%' group by slug order by num desc")
 c.execute("create view popular_result as select title, author, \
     num from popular, articles where popular.slug = articles.slug")
 
@@ -67,16 +82,15 @@ df = pd.read_sql_query("select traffic_bad.time, ok, bad, \
 print(df)
 
 db.close()
-
 ```
 
 ### Explanation of the code
 1. Question #1: What are the most popular three articles of all time?
-* In order to find articles with the most views, you have to join two tables(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function.
+* In order to find articles with the most views, you have to join two tables(articles, log) by matching articles.slug and log.path. Since they are not in the same form, an asterisk is needed to use the like function. **Please note that only log with status '200 OK' should count.**
 ```
 c.execute("create view popular as select slug, count(*) as num \
-    from articles, log where log.path like '%' || articles.slug || \
-    '%' group by slug order by num desc")
+    from articles, log where log.path like '%'||articles.slug||'%' \
+    and log.status like '200%' group by slug order by num desc")
 c.execute("create view popular_result as select title, author, \
     num from popular, articles where popular.slug = articles.slug")
 
